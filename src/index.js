@@ -4,19 +4,27 @@ const io = require('socket.io')(http);
 const debounce = require('debounce');
 const chokidar = require('chokidar');  // file watching
 
-/*
- * Usage:
- *   node hotload-server/index.js <port> <directory> <extension>
- */
-const args = process.argv.slice(2);
-const port = parseInt(args[0]);
-const watchDir = args[1];           // e.g., "javascript"
-const extension = args[2];          // e.g., "jsx"
+const argv = require('yargs')
+    .usage('Usage: $0 --port <port> --directory <dir> --extension <ext>')
+    .example('$0 --port 3000 --directory javascript --extension jsx')
+    .demand('port')
+    .alias('port', 'p')
+    .describe('port', 'port on which to listen for WebSocket connections')
+    .demand('directory')
+    .alias('directory', 'd')
+    .describe('directory', 'directory to watch for changes (recursively)')
+    .demand('extension')
+    .alias('extension', 'e')
+    .describe('extension', 'file extension to watch')
+    .help('h', 'help')
+    .argv;
 
-console.log(`Watching "${watchDir}" for changes to .${extension} files.`);
+const {port, directory, extension} = argv;
+
+console.log(`Watching "${directory}" for changes to .${extension} files.`);
 
 io.on('connection', socket => {
-    const watchGlob = watchDir + '/**/*.' + extension;
+    const watchGlob = directory + '/**/*.' + extension;
     const watcher = chokidar.watch(watchGlob);
 
     let changedFiles = {};  // set as object
