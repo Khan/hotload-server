@@ -1,0 +1,11 @@
+{
+  "name": "hot loading socket server",
+  "version": "0.0.1",
+  "description": "server to notify clients when files change",
+  "dependencies": {
+    "chokidar": "^1.0.5",
+    "debounce": "^1.0.0",
+    "express": "^4.10.2",
+    "socket.io": "^1.3.6"
+  }
+}
