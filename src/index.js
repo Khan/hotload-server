@@ -5,27 +5,21 @@ const debounce = require('debounce');
 const chokidar = require('chokidar');  // file watching
 
 const argv = require('yargs')
-    .usage('Usage: $0 --port <port> --directory <dir> --extension <ext>')
-    .example('$0 --port 3000 --directory javascript --extension jsx')
+    .usage('Usage: $0 --port <port> <globs-to-watch> [ ... ]')
+    .example('$0 --port 3000 "dir/**/*.txt"')
+    .demand(1)
     .demand('port')
     .alias('port', 'p')
     .describe('port', 'port on which to listen for WebSocket connections')
-    .demand('directory')
-    .alias('directory', 'd')
-    .describe('directory', 'directory to watch for changes (recursively)')
-    .demand('extension')
-    .alias('extension', 'e')
-    .describe('extension', 'file extension to watch')
     .help('h', 'help')
     .argv;
 
-const {port, directory, extension} = argv;
+const {port, _: globs} = argv;
 
-console.log(`Watching "${directory}" for changes to .${extension} files.`);
+console.log(`Watching for changes to ${globs.join(", ")}.`);
 
 io.on('connection', socket => {
-    const watchGlob = directory + '/**/*.' + extension;
-    const watcher = chokidar.watch(watchGlob);
+    const watcher = chokidar.watch(globs);
 
     let changedFiles = {};  // set as object
     const sendChanges = debounce(() => {
@@ -33,7 +27,7 @@ io.on('connection', socket => {
         changedFiles = {};
     }, 250);
     const handler = (name) => {
-        console.log("Saw a change!");
+        console.log("Changed: " + name);
         changedFiles[name] = true;
         sendChanges();
     };
