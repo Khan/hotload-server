@@ -42,6 +42,11 @@ io.on('connection', socket => {
     });
 });
 
+app.get('/_api/ping', function(req, res) {
+    res.setHeader('content-type', 'text/plain');
+    res.send('pong');
+});
+
 http.listen(port, () => {
     console.log(`Server started on port ${port}.`);
 });
