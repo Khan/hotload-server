@@ -1,17 +1,22 @@
 const app = require('express')();
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
-
 const debounce = require('debounce');
-
 const chokidar = require('chokidar');  // file watching
 
+/*
+ * Usage:
+ *   node hotload-server/index.js <port> <directory> <extension>
+ */
+const args = process.argv.slice(2);
+const port = parseInt(args[0]);
+const watchDir = args[1];           // e.g., "javascript"
+const extension = args[2];          // e.g., "jsx"
 
-// Root directory to watch for file changes.
-const watchDir = 'javascript';  // run from parent dir
-const watchGlob = watchDir + '/**/*.jsx';
+console.log(`Watching "${watchDir}" for changes to .${extension} files.`);
 
 io.on('connection', socket => {
+    const watchGlob = watchDir + '/**/*.' + extension;
     const watcher = chokidar.watch(watchGlob);
 
     let changedFiles = {};  // set as object
@@ -35,7 +40,6 @@ io.on('connection', socket => {
     });
 });
 
-const port = 3000;
 http.listen(port, () => {
     console.log(`Server started on port ${port}.`);
 });
