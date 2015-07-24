@@ -1,5 +1,5 @@
 {
-  "name": "hotloading-server",
+  "name": "hotload-server",
   "version": "0.0.1",
   "description": "server to notify clients when files change",
   "files": [
