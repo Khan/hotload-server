@@ -5,8 +5,8 @@ This minimalistic server watches for changes to files, then notifies a browser o
 ## Usage
 
 ```bash
-make deps  # once
-make
+npm install    # once (per clone)
+npm run build  # once (per clone, or again if you change the code)
 node dist/index.js --port 3000 'javascript/**/*.jsx' 'stylesheets/**/*.css'
 ```
 
